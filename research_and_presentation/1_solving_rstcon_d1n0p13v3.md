@@ -6,18 +6,20 @@ solving rstcon/forensics/d1n0p13v3
 the given pcap file contains encoded data using [d1n0p13](https://github.com/nblair2/D1N0P13)
 
 ## expected solution
-understand the dnp3 protocol
-understand d1n0p13
-extract the encoded data
+understand the dnp3 protocol  
+understand d1n0p13  
+extract the encoded data  
+
 
 ## keywords to start the research
 dnp3, IEEE-1815
 ## references to study DNP3
-https://www.rfc-editor.org/rfc/rfc8578.txt mentions DNP 3 as an alias to `IEEE-1815`
-https://www.dnp.org/About/Overview-of-DNP3-Protocol
+https://www.rfc-editor.org/rfc/rfc8578.txt mentions DNP 3 as an alias to `IEEE-1815`  
+https://www.dnp.org/About/Overview-of-DNP3-Protocol  
 https://www.dnp.org/Portals/0/AboutUs/DNP3%20Primer%20Rev%20A.pdf
 ## learning more about DNP3
-### what is DNP3?
+### what is DNP3?  
+![](https://upload.wikimedia.org/wikipedia/commons/thumb/c/ca/DNP-overview.png/600px-DNP-overview.png)  
 DNP3 is a protocol for
 transmission of data from point A to point B using serial and IP 
 communications. It has been used primarily by utilities such as
@@ -44,17 +46,15 @@ It is intended for SCADA (Supervisory Control and Data Acquisition) applications
 
 https://automationcommunity.com/dnp3-distributed-network-protocol-3/
 
-question: isnt the TCP/IP stack enough for such equipment to communicate?
+question: isn't the TCP/IP stack enough for such equipment to communicate?
 ### my summarized understanding
 
-some devices are output sensors or input devices that are having a serial pin for I/O like a device that shows patients heartbeat
-these devices don't operate on TCP/IP
-instead a TCP/IP device is connected to these I/O devices and will provide the remote TCP/IP hosts with information received on these pins or will put the data received from a remote host on the requested pin
-and these are done the DNP 3 protocol
+Some devices are output sensors or input devices that have a serial pin for I/O, such as devices that monitor a patient's heartbeat.  
+These devices don't operate over TCP/IP.  
+Instead, a TCP/IP-enabled device interfaces with these I/O devices, relaying information to remote TCP/IP hosts based on data received via the serial pins, or it forwards data from a remote host to the designated pin.  
+These processes are managed using the DNP3 protocol.
 
 
-### wiki pedia
-![656562dab890b61cbd99d03f546bdd95.png](:/d6856384bf9f44d98d36ad80983e9374)
 
 https://www.youtube.com/watch?v=CwMFrvins5Q
 
@@ -103,12 +103,12 @@ for method in methods:
 	print(message.to01())
 	print("----")
 ```
-nothing...
+nothing...  
 ### why did it fail?
-after some debugging, i realized the script didn't recognize any packet to extract data
+after some debugging, i realized the script didn't recognize any packet to extract data  
 
-so i did a pretty dumb thing
-i removed the whole matching the packet part of the code
+so i did a pretty dumb thing  
+i removed the whole matching the packet part of the code  
 it worked 
 ```python
 #!/usr/local/bin/python
@@ -206,12 +206,12 @@ for method in methods:
 	print("----")
 ```
 
->iin
-bytearray(b'rstcon{r3s3rv3d_f13ld5?}\xfe\x00')
-\----
-app-req
-\----
-app-resp
-----
+>iin  
+bytearray(b'rstcon{r3s3rv3d_f13ld5?}\xfe\x00')  
+\----  
+app-req  
+\----  
+app-resp  
+----  
 
 i could have solved this challenge without ever knowing what dnp3 does however, but it would defeat the whole purpose me doing ctf challenges: learning 
