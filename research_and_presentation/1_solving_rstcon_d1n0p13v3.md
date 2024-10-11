@@ -107,10 +107,10 @@ app-resp
 ```
 no flag for us...
 ### Why did it fail?
-after some debugging, i realized the script didn't recognize any packet to extract data  
+After some debugging, i realized the script didn't recognize any packet to extract data.  
 
-so i did a pretty dumb thing  
-i removed the whole matching the packet part of the code  and it worked! 
+I made a wild guess and removed the whole packet filtring part of the code.
+it surprisingly worked! 
 
 ### Solve script
 note: printing the flag is happening inside the extract_packets()
