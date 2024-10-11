@@ -1,17 +1,16 @@
-# Solving a CTF Challenge by Following the Research Method Provided in Class  
-  
+# Solving the D1N0P13v3 CTF challenge
 ## The problem   
   
-The challenge involves solving `rstcon/forensics/d1n0p13v3` which provided us with a pcap file and we are asked to extract data that is encoded in the traffic using [d1n0p13](https://github.com/nblair2/D1N0P13).  
+The challenge involves solving `rstcon/forensics/D1N0P13v3` which provided us with a pcap file and we are asked to extract data that is encoded in the traffic using [D1N0P13](https://github.com/nblair2/D1N0P13).  
   
 ## Assumptions  
   
-The given pcap file contains encoded data using [d1n0p13](https://github.com/nblair2/D1N0P13).  
+The given pcap file contains encoded data using [D1N0P13](https://github.com/nblair2/D1N0P13).  
   
 ## Expected Solution  
   
 1. Understand the DNP3 protocol.    
-2. Understand d1n0p13.  
+2. Understand D1N0P13.  
 3. Extract the encoded data.    
   
   
@@ -19,7 +18,7 @@ The given pcap file contains encoded data using [d1n0p13](https://github.com/nbl
   
 DNP3, IEEE-1815, D1N0P13  
   
-## What is d1n0p13?  
+## What is D1N0P13?  
   
 D1N0P13 (pronounced dino-pie) is a network storage covert channel that encodes information in legitimate DNP31 traffic.  
   
@@ -72,7 +71,7 @@ These processes are managed using the DNP3 protocol.
   
   
   
-## d1n0p13 source code:  
+## D1N0P13 source code:  
   
 ```  
 .
@@ -82,8 +81,8 @@ These processes are managed using the DNP3 protocol.
 ├── README.md  
 ├── requirements.txt  
 └── src  
-    ├── d1n0p13-client.py  
-    ├── d1n0p13-server.py  
+    ├── D1N0P13-client.py  
+    ├── D1N0P13-server.py  
     └── DNP3_Lib.py  
 4 directories, 8 files  
 ```  
@@ -107,7 +106,7 @@ intercepts the traffic and extracts the message using `extract_packets()`
   
 ## Solution  
   
-I used the extract_packets function from the d1n0p13 server to extract any encoded message in the pcap file.  
+I used the extract_packets function from the D1N0P13 server to extract any encoded message in the pcap file.  
 ```python  
 for method in methods:  
 	message = bitarray.bitarray()  
@@ -149,7 +148,7 @@ methods=['iin', 'app-req', 'app-resp']
 class args:
     method=""
 message=bitarray.bitarray()
-pcap_file = rdpcap("./d1n0p13v3.pcap")
+pcap_file = rdpcap("./D1N0P13v3.pcap")
 def extract_packets(pkt):
 	global args, message
 	
@@ -205,3 +204,4 @@ app-req
 app-resp    
 ----    
 ```  
+
