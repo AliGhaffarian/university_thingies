@@ -5,7 +5,7 @@ The challenge involves solving `rstcon/forensics/d1n0p13v3` which provided us wi
 The given pcap file contains encoded data using [d1n0p13](https://github.com/nblair2/D1N0P13).
 
 ## Expected Solution
-1. Understand the dnp3 protocol.  
+1. Understand the DNP3 protocol.  
 2. Understand d1n0p13.
 3. Extract the encoded data.  
 
@@ -13,8 +13,9 @@ The given pcap file contains encoded data using [d1n0p13](https://github.com/nbl
 ## Keywords to Start the Research
 DNP3, IEEE-1815, D1N0P13
 ## What is d1n0p13?
-D1N0P13 (pronounced dino-pie) is a network storage covert channel that encodes inforrmation in legitimate DNP31 traffic.
+D1N0P13 (pronounced dino-pie) is a network storage covert channel that encodes information in legitimate DNP31 traffic.
 ## References to Study DNP3
+https://github.com/nblair2/D1N0P13
 https://www.rfc-editor.org/rfc/rfc8578.txt mentions DNP 3 as an alias to `IEEE-1815`  
 https://www.dnp.org/About/Overview-of-DNP3-Protocol  
 https://www.dnp.org/Portals/0/AboutUs/DNP3%20Primer%20Rev%20A.pdf
@@ -107,10 +108,10 @@ app-resp
 ```
 no flag for us...
 ### Why did it fail?
-After some debugging, i realized the script didn't recognize any packet to extract data.  
+After some debugging, I realized the script didn't recognize any packet to extract data.  
 
-I made a wild guess and removed the whole packet filtring part of the code.
-it surprisingly worked! 
+I made a wild guess and removed the whole packet filtering part of the code.
+surprisingly, it worked!
 
 ### Solve script
 note: printing the flag is happening inside the extract_packets()
@@ -137,7 +138,7 @@ def extract_packets(pkt):
 		changed = False
 		# if packet has ApplicationIIN
 		if ((args.method == "iin") and pkt.haslayer(DNP3ApplicationIIN)):
-			#decode the nmessage into the two reserved fieldsS
+			#decode the message from the two reserved fields
 			message += str(pkt[DNP3ApplicationIIN].RESERVED_1)
 			message += str(pkt[DNP3ApplicationIIN].RESERVED_2)
 
