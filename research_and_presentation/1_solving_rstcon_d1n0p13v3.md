@@ -1,39 +1,36 @@
-so everytime i solve a ctf challenge i do all these in my mind
+# Solving a CTF Challenge by Following the Research Method Provided in Class
+## The problem 
+Solving `rstcon/forensics/d1n0p13v3`.
+## Assumptions
+The given pcap file contains encoded data using [d1n0p13](https://github.com/nblair2/D1N0P13).
 
-## the problem 
-solving rstcon/forensics/d1n0p13v3
-## assumptions
-the given pcap file contains encoded data using [d1n0p13](https://github.com/nblair2/D1N0P13)
-
-## expected solution
-understand the dnp3 protocol  
-understand d1n0p13  
-extract the encoded data  
+## Expected Solution
+1. Understand the dnp3 protocol.  
+2. Understand d1n0p13.
+3. Extract the encoded data.  
 
 
-## keywords to start the research
-dnp3, IEEE-1815
-## references to study DNP3
+## Keywords to Start the Research
+DNP3, IEEE-1815
+## References to Study DNP3
 https://www.rfc-editor.org/rfc/rfc8578.txt mentions DNP 3 as an alias to `IEEE-1815`  
 https://www.dnp.org/About/Overview-of-DNP3-Protocol  
 https://www.dnp.org/Portals/0/AboutUs/DNP3%20Primer%20Rev%20A.pdf
-## learning more about DNP3
-### what is DNP3?  
+https://automationcommunity.com/dnp3-distributed-network-protocol-3/
+https://www.youtube.com/watch?v=CwMFrvins5Q
+## Learning More About DNP3
+### What is DNP3?  
 ![](https://upload.wikimedia.org/wikipedia/commons/thumb/c/ca/DNP-overview.png/600px-DNP-overview.png)  
 DNP3 is a protocol for
 transmission of data from point A to point B using serial and IP 
 communications. It has been used primarily by utilities such as
 the electric and water companies, but it functions well for other areas
-### a high level overview of DNP3
+### A High-Level Overview of DNP3
 Outstations collect and provide the master with:
-- Binary input data that is useful to monitor two-state devices. For 		
-		example a circuit breaker is closed or tripped; a
-		pipeline pressure alarm shows normal or excessive.
-- Analog input data that conveys voltages, currents, power, reservoir 
-		water levels and temperatures.
-- Count input data that reports energy in kilowatt hours or fluid volume.
-- Files that contain configuration data.
-
+- **Binary input data**: Monitoring two-state devices like a circuit breaker (closed/tripped) or - pipeline pressure alarms (normal/excessive).
+- **Analog input data**: Conveying voltages, currents, power, reservoir water levels, and temperatures.
+- **Count input data**: Reporting energy (e.g., kilowatt-hours) or fluid volume.
+- **Files**: Containing configuration data.
 
 The master station issues control commands that take the form of:
 - Close or trip a circuit breaker, start or stop a motor, and open or 
@@ -41,13 +38,11 @@ The master station issues control commands that take the form of:
 - Analog output values to set a regulated pressure or a desired voltage 
 		level
 
-DNP3 is **not** a general purpose protocol
+DNP3 is **not** a general purpose protocol.
 It is intended for SCADA (Supervisory Control and Data Acquisition) applications.
 
-https://automationcommunity.com/dnp3-distributed-network-protocol-3/
 
-question: isn't the TCP/IP stack enough for such equipment to communicate?
-### my summarized understanding
+### My Summarized Understanding
 
 Some devices are output sensors or input devices that have a serial pin for I/O, such as devices that monitor a patient's heartbeat.  
 These devices don't operate over TCP/IP.  
@@ -56,7 +51,7 @@ These processes are managed using the DNP3 protocol.
 
 
 
-https://www.youtube.com/watch?v=CwMFrvins5Q
+
 
 
 ## d1n0p13 source code:
@@ -70,9 +65,7 @@ https://www.youtube.com/watch?v=CwMFrvins5Q
 └── src
     ├── d1n0p13-client.py
     ├── d1n0p13-server.py
-    ├── DNP3_Lib.py
-    └── __pycache__
-        └── DNP3_Lib.cpython-312.pyc
+    └── DNP3_Lib.py
 
 4 directories, 8 files
     
@@ -81,18 +74,16 @@ https://www.youtube.com/watch?v=CwMFrvins5Q
 ### DNP3_Lib.py
 a library that implements the dnp3 headers in scapy framework
 
-### client and server
+### Client and server
 these two work by intercepting the traffic based on the passed argument
 then they do their job accordingly based on the encoding method (iin, app-req, app-resp)
-#### client
-intercepts the traffic and encodes the given message in the packets
-alter_packet function
-#### server
-intercepts the traffic and extracts the message 
-extract function
+#### Client
+intercepts the traffic and encodes the given message in the packets using `alter_packets()` 
+#### Server
+intercepts the traffic and extracts the message using `extract_packets()`
 
-## solution
-use the extract_packets function of d1n0p13 server to extract any encoded message in the pcap
+## Solution
+I used the extract_packets function from the d1n0p13 server to extract any encoded message in the pcap file.
 ```python
 for method in methods:
 	message = bitarray.bitarray()
@@ -103,44 +94,42 @@ for method in methods:
 	print(message.to01())
 	print("----")
 ```
-nothing...  
-### why did it fail?
+output:
+```
+iin    
+----  
+app-req  
+----  
+app-resp  
+----  
+```
+no flag for us...
+### Why did it fail?
 after some debugging, i realized the script didn't recognize any packet to extract data  
 
 so i did a pretty dumb thing  
-i removed the whole matching the packet part of the code  
-it worked 
+i removed the whole matching the packet part of the code  and it worked! 
+
+### Solve script
+note: printing the flag is happening inside the extract_packets()
 ```python
 #!/usr/local/bin/python
 
 
-import argparse
 import bitarray
 import bitarray.util
-import crc
-import netfilterqueue
-import random
-import subprocess
 
 from DNP3_Lib import *
 from scapy.all import *
 methods=['iin', 'app-req', 'app-resp']
-host1_ip="10.0.1.10"
-host1_port=44222
-host2_ip="10.0.2.5"
-host2_port=20000
+#what extraction method are we trying
 class args:
-    src =host2_ip
-    dst=host1_ip
-    sport=host2_ip
-    dport=host1_ip
     method=""
 message=bitarray.bitarray()
 pcap_file = rdpcap("./d1n0p13v3.pcap")
 def extract_packets(pkt):
 	global args, message
 	
-
 	# check if the packet is DNP3 and going to the right spot
 	if True:
 		changed = False
@@ -189,6 +178,7 @@ def extract_packets(pkt):
 	if ((len(message) > 0)
 			and (len(message) % 8 == 0)
 			and (message[-8:] == bitarray.bitarray('00000000'))):
+		#probably flag
 		print(bytearray(message))
 
 		raise NameError("EndOfStream")
@@ -204,14 +194,16 @@ for method in methods:
 		except:
 			break
 	print("----")
-```
 
->iin  
+
+```
+output
+```
+iin  
 bytearray(b'rstcon{r3s3rv3d_f13ld5?}\xfe\x00')  
-\----  
+----  
 app-req  
-\----  
+----  
 app-resp  
 ----  
-
-i could have solved this challenge without ever knowing what dnp3 does however, but it would defeat the whole purpose me doing ctf challenges: learning 
+```
