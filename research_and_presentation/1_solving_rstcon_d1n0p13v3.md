@@ -1,6 +1,6 @@
 # Solving a CTF Challenge by Following the Research Method Provided in Class
 ## The problem 
-Solving `rstcon/forensics/d1n0p13v3`.
+The challenge involves solving `rstcon/forensics/d1n0p13v3` which provided us with a pcap file and we are asked to extract data that is encoded in the traffic using [d1n0p13](https://github.com/nblair2/D1N0P13).
 ## Assumptions
 The given pcap file contains encoded data using [d1n0p13](https://github.com/nblair2/D1N0P13).
 
@@ -11,7 +11,9 @@ The given pcap file contains encoded data using [d1n0p13](https://github.com/nbl
 
 
 ## Keywords to Start the Research
-DNP3, IEEE-1815
+DNP3, IEEE-1815, D1N0P13
+## What is d1n0p13?
+D1N0P13 (pronounced dino-pie) is a network storage covert channel that encodes inforrmation in legitimate DNP31 traffic.
 ## References to Study DNP3
 https://www.rfc-editor.org/rfc/rfc8578.txt mentions DNP 3 as an alias to `IEEE-1815`  
 https://www.dnp.org/About/Overview-of-DNP3-Protocol  
