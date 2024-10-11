@@ -1,34 +1,49 @@
 # Solving a CTF Challenge by Following the Research Method Provided in Class
+
 ## The problem 
-The challenge involves solving `rstcon/forensics/D1N0P13v3` which provided us with a pcap file and we are asked to extract data that is encoded in the traffic using [D1N0P13](https://github.com/nblair2/D1N0P13).
+
+The challenge involves solving `rstcon/forensics/d1n0p13v3` which provided us with a pcap file and we are asked to extract data that is encoded in the traffic using [d1n0p13](https://github.com/nblair2/D1N0P13).
+
 ## Assumptions
-The given pcap file contains encoded data using [D1N0P13](https://github.com/nblair2/D1N0P13).
+
+The given pcap file contains encoded data using [d1n0p13](https://github.com/nblair2/D1N0P13).
 
 ## Expected Solution
+
 1. Understand the DNP3 protocol.  
-2. Understand D1N0P13.
+2. Understand d1n0p13.
 3. Extract the encoded data.  
 
 
 ## Keywords to Start the Research
+
 DNP3, IEEE-1815, D1N0P13
-## What is D1N0P13?
+
+## What is d1n0p13?
+
 D1N0P13 (pronounced dino-pie) is a network storage covert channel that encodes information in legitimate DNP31 traffic.
+
 ## References to Study DNP3
+
 https://github.com/nblair2/D1N0P13
 https://www.rfc-editor.org/rfc/rfc8578.txt mentions DNP 3 as an alias to `IEEE-1815`  
 https://www.dnp.org/About/Overview-of-DNP3-Protocol  
 https://www.dnp.org/Portals/0/AboutUs/DNP3%20Primer%20Rev%20A.pdf
 https://automationcommunity.com/dnp3-distributed-network-protocol-3/
 https://www.youtube.com/watch?v=CwMFrvins5Q
+
 ## Learning More About DNP3
+
 ### What is DNP3?  
+
 ![](https://upload.wikimedia.org/wikipedia/commons/thumb/c/ca/DNP-overview.png/600px-DNP-overview.png)  
 DNP3 is a protocol for
 transmission of data from point A to point B using serial and IP 
 communications. It has been used primarily by utilities such as
 the electric and water companies, but it functions well for other areas
+
 ### A High-Level Overview of DNP3
+
 Outstations collect and provide the master with:
 - **Binary input data**: Monitoring two-state devices like a circuit breaker (closed/tripped) or - pipeline pressure alarms (normal/excessive).
 - **Analog input data**: Conveying voltages, currents, power, reservoir water levels, and temperatures.
@@ -57,7 +72,8 @@ These processes are managed using the DNP3 protocol.
 
 
 
-## D1N0P13 source code:
+## d1n0p13 source code:
+
 ```
 .
 ├── docker
@@ -66,8 +82,8 @@ These processes are managed using the DNP3 protocol.
 ├── README.md
 ├── requirements.txt
 └── src
-    ├── D1N0P13-client.py
-    ├── D1N0P13-server.py
+    ├── d1n0p13-client.py
+    ├── d1n0p13-server.py
     └── DNP3_Lib.py
 
 4 directories, 8 files
@@ -75,18 +91,25 @@ These processes are managed using the DNP3 protocol.
 ```
 
 ### DNP3_Lib.py
+
 a library that implements the dnp3 headers in scapy framework
 
 ### Client and server
+
 these two work by intercepting the traffic based on the passed argument
 then they do their job accordingly based on the encoding method (iin, app-req, app-resp)
+
 #### Client
+
 intercepts the traffic and encodes the given message in the packets using `alter_packets()` 
+
 #### Server
+
 intercepts the traffic and extracts the message using `extract_packets()`
 
 ## Solution
-I used the extract_packets function from the D1N0P13 server to extract any encoded message in the pcap file.
+
+I used the extract_packets function from the d1n0p13 server to extract any encoded message in the pcap file.
 ```python
 for method in methods:
 	message = bitarray.bitarray()
@@ -107,13 +130,16 @@ app-resp
 ----  
 ```
 no flag for us...
+
 ### Why did it fail?
+
 After some debugging, I realized the script didn't recognize any packet to extract data.  
 
 I made a wild guess and removed the whole packet filtering part of the code.
 surprisingly, it worked!
 
 ### Solve script
+
 note: printing the flag is happening inside the extract_packets()
 ```python
 #!/usr/local/bin/python
@@ -129,7 +155,7 @@ methods=['iin', 'app-req', 'app-resp']
 class args:
     method=""
 message=bitarray.bitarray()
-pcap_file = rdpcap("./D1N0P13v3.pcap")
+pcap_file = rdpcap("./d1n0p13v3.pcap")
 def extract_packets(pkt):
 	global args, message
 	
