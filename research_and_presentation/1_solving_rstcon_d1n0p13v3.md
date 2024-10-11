@@ -20,7 +20,7 @@ DNP3, IEEE-1815, D1N0P13
   
 ## What is D1N0P13?  
   
-D1N0P13 (pronounced dino-pie) is a network storage covert channel that encodes information in legitimate DNP31 traffic.  
+D1N0P13 (pronounced dino-pie) is a network storage covert channel that encodes information in legitimate DNP3 traffic.  
   
 ## References to Study DNP3  
   
