@@ -1,5 +1,5 @@
 # Solving the D1N0P13v3 CTF challenge
-## The problem   
+## The Problem   
   
 The challenge involves solving `rstcon/forensics/D1N0P13v3` which provided us with a pcap file and we are asked to extract data that is encoded in the traffic using [D1N0P13](https://github.com/nblair2/D1N0P13).  
   
@@ -22,7 +22,7 @@ DNP3, IEEE-1815, D1N0P13
   
 D1N0P13 (pronounced dino-pie) is a network storage covert channel that encodes information in legitimate DNP3 traffic.  
   
-## References to Study DNP3  
+## References to Study  
   
 https://github.com/nblair2/D1N0P13  
 https://www.rfc-editor.org/rfc/rfc8578.txt mentions DNP 3 as an alias to `IEEE-1815`    
@@ -39,7 +39,7 @@ https://www.youtube.com/watch?v=CwMFrvins5Q
 DNP3 is a protocol for  
 transmission of data from point A to point B using serial and IP   
 communications. It has been used primarily by utilities such as  
-the electric and water companies, but it functions well for other areas  
+the electric and water companies, but it functions well for other areas.  
   
 ### A High-Level Overview of DNP3  
   
@@ -71,7 +71,7 @@ These processes are managed using the DNP3 protocol.
   
   
   
-## D1N0P13 source code:  
+## D1N0P13 Source Code:  
   
 ```  
 .
@@ -89,20 +89,20 @@ These processes are managed using the DNP3 protocol.
   
 ### DNP3_Lib.py  
   
-a library that implements the dnp3 headers in scapy framework  
+A library that implements the dnp3 headers in scapy framework.  
   
-### Client and server  
+### Client and Server  
   
-these two work by intercepting the traffic based on the passed argument  
-then they do their job accordingly based on the encoding method (iin, app-req, app-resp)  
+These two work by intercepting the traffic based on the passed argument.  
+Then they do their job accordingly based on the encoding method (iin, app-req, app-resp).  
   
 #### Client  
   
-intercepts the traffic and encodes the given message in the packets using `alter_packets()`   
+Intercepts the traffic and encodes the given message in the packets using `alter_packets()`.   
   
 #### Server  
   
-intercepts the traffic and extracts the message using `extract_packets()`  
+Intercepts the traffic and extracts the message using `extract_packets()`.  
   
 ## Solution  
   
@@ -117,7 +117,7 @@ for method in methods:
 	print(message.to01())  
 	print("----")  
 ```  
-**output**
+**Output**
 ```  
 iin      
 ----    
@@ -128,14 +128,14 @@ app-resp
 ```  
 no flag for us...  
   
-### Why did it fail?  
+### Why Did it Fail?  
   
 After some debugging, I realized the script didn't recognize any packet to extract data.    
   
 I made a wild guess and removed the whole packet filtering part of the code.  
 surprisingly, it worked!  
   
-### Solve script  
+### Solve Script  
   
 note: printing the flag is happening inside the extract_packets()  
 ```python
@@ -153,7 +153,7 @@ def extract_packets(pkt):
 	global args, message
 	
 	# check if the packet is DNP3 and going to the right spot
-	if True: #removed the packet matcher function 
+	if True: #removed the packet match function
 		# if packet has ApplicationIIN
 		if ((args.method == "iin") and pkt.haslayer(DNP3ApplicationIIN)):
 			#decode the nmessage into the two reserved fieldsS
@@ -193,7 +193,7 @@ for method in methods:
 			break
 	print("----")
 ```  
-**output**
+**Output**
 ```  
 iin    
 bytearray(b'rstcon{r3s3rv3d_f13ld5?}\xfe\x00')    
@@ -203,4 +203,5 @@ app-req
 app-resp    
 ----    
 ```  
+
 
