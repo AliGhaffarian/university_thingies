@@ -75,7 +75,7 @@ These processes are managed using the DNP3 protocol.
 ## d1n0p13 source code:  
   
 ```  
-.  
+.
 ├── docker  
 │   ├── docker-compose.yml  
 │   └── Dockerfile  
@@ -85,9 +85,7 @@ These processes are managed using the DNP3 protocol.
     ├── d1n0p13-client.py  
     ├── d1n0p13-server.py  
     └── DNP3_Lib.py  
-  
 4 directories, 8 files  
-      
 ```  
   
 ### DNP3_Lib.py  
@@ -120,7 +118,7 @@ for method in methods:
 	print(message.to01())  
 	print("----")  
 ```  
-output:  
+**output**
 ```  
 iin      
 ----    
@@ -141,92 +139,63 @@ surprisingly, it worked!
 ### Solve script  
   
 note: printing the flag is happening inside the extract_packets()  
-```python  
-#!/usr/local/bin/python  
-  
-  
-import bitarray  
-import bitarray.util  
-  
-from DNP3_Lib import *  
-from scapy.all import *  
-methods=['iin', 'app-req', 'app-resp']  
-#what extraction method are we trying  
-class args:  
-    method=""  
-message=bitarray.bitarray()  
-pcap_file = rdpcap("./d1n0p13v3.pcap")  
-def extract_packets(pkt):  
-	global args, message  
-	  
-	# check if the packet is DNP3 and going to the right spot  
-	if True:  
-		changed = False  
-		# if packet has ApplicationIIN  
-		if ((args.method == "iin") and pkt.haslayer(DNP3ApplicationIIN)):  
-			#decode the message from the two reserved fields  
-			message += str(pkt[DNP3ApplicationIIN].RESERVED_1)  
-			message += str(pkt[DNP3ApplicationIIN].RESERVED_2)  
-  
-  
-			# reset the IIN RESERVED bits to 0 to cover our tracks  
-			pkt[DNP3ApplicationIIN].RESERVED_1 = 0  
-			pkt[DNP3ApplicationIIN].RESERVED_2 = 0  
-			changed = True  
-  
-		elif ((args.method == "app-resp")  
-				and pkt.haslayer(DNP3ApplicationResponse)  
-				and pkt[DNP3ApplicationResponse].FUNC_CODE  
-						not in [0x81, 0x82, 0x83]):  
-			extra = pkt[DNP3ApplicationResponset].FUNC_CODE - 0x83  
-			message += bitarray.util.int2ba(extra // 0x3 - 1, length=4)  
-			pkt[DNP3ApplicationRequest].FUNC_CODE = 0x81 + (extra % 0x3)  
-			changed = True  
-  
-		elif ((args.method == "app-req")  
-				and pkt.haslayer(DNP3ApplicationRequest)  
-				and (pkt[DNP3ApplicationRequest].FUNC_CODE >= 0x22)):  
-			message += bitarray.util.int2ba(  
-					pkt[DNP3ApplicationRequest].FUNC_CODE // 0x22 - 1,  
-					length=2)  
-			pkt[DNP3ApplicationRequest].FUNC_CODE = \  
-					pkt[DNP3ApplicationRequest].FUNC_CODE % 0x22  
-			changed = True  
-  
-		if changed:  
-			# and update the CRC  
-			crc = update_data_chunk_crc(bytes(pkt[DNP3Transport]))  
-			pkt[Raw].load = pkt[Raw].load[:-2] + crc[-2:]  
-  
-			# and delete other checksums so scapy will calculate  
-			del pkt[IP].chksum  
-			del pkt[TCP].chksum  
-  
-  
-	# check if we have reached the end of the stream  
-	if ((len(message) > 0)  
-			and (len(message) % 8 == 0)  
-			and (message[-8:] == bitarray.bitarray('00000000'))):  
-		#probably flag  
-		print(bytearray(message))  
-  
-		raise NameError("EndOfStream")  
-  
-  
-for method in methods:  
-	message = bitarray.bitarray()  
-	args.method = method  
-	print(args.method)  
-	for packet in pcap_file:  
-		try:  
-			extract_packets(packet)  
-		except:  
-			break  
-	print("----")  
-  
-  
+```python
+import bitarray
+import bitarray.util
+
+from DNP3_Lib import *
+from scapy.all import *
+methods=['iin', 'app-req', 'app-resp']
+class args:
+    method=""
+message=bitarray.bitarray()
+pcap_file = rdpcap("./d1n0p13v3.pcap")
+def extract_packets(pkt):
+	global args, message
+	
+	# check if the packet is DNP3 and going to the right spot
+	if True:
+		changed = False
+		# if packet has ApplicationIIN
+		if ((args.method == "iin") and pkt.haslayer(DNP3ApplicationIIN)):
+			#decode the nmessage into the two reserved fieldsS
+			message += str(pkt[DNP3ApplicationIIN].RESERVED_1)
+			message += str(pkt[DNP3ApplicationIIN].RESERVED_2)
+
+		elif ((args.method == "app-resp")
+				and pkt.haslayer(DNP3ApplicationResponse)
+				and pkt[DNP3ApplicationResponse].FUNC_CODE
+						not in [0x81, 0x82, 0x83]):
+			extra = pkt[DNP3ApplicationResponset].FUNC_CODE - 0x83
+			message += bitarray.util.int2ba(extra // 0x3 - 1, length=4)
+
+		elif ((args.method == "app-req")
+				and pkt.haslayer(DNP3ApplicationRequest)
+				and (pkt[DNP3ApplicationRequest].FUNC_CODE >= 0x22)):
+			message += bitarray.util.int2ba(
+					pkt[DNP3ApplicationRequest].FUNC_CODE // 0x22 - 1,
+					length=2)
+
+	# check if we have reached the end of the stream
+	if ((len(message) > 0)
+			and (len(message) % 8 == 0)
+			and (message[-8:] == bitarray.bitarray('00000000'))):
+		print(bytearray(message))
+
+		raise NameError("EndOfStream")
+
+for method in methods:
+	message = bitarray.bitarray()
+	args.method = method
+	print(args.method)
+	for packet in pcap_file:
+		try:
+			extract_packets(packet)
+		except:
+			break
+	print("----")
 ```  
-output  
+**output**
 ```  
 iin    
 bytearray(b'rstcon{r3s3rv3d_f13ld5?}\xfe\x00')    
