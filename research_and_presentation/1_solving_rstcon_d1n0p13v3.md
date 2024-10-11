@@ -153,8 +153,7 @@ def extract_packets(pkt):
 	global args, message
 	
 	# check if the packet is DNP3 and going to the right spot
-	if True:
-		changed = False
+	if True: #removed the packet matcher function 
 		# if packet has ApplicationIIN
 		if ((args.method == "iin") and pkt.haslayer(DNP3ApplicationIIN)):
 			#decode the nmessage into the two reserved fieldsS
