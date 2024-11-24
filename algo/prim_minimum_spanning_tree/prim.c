@@ -1,3 +1,4 @@
+#include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -40,6 +41,11 @@ struct edge lightest_edge_from_selected_v_to_remaining_v(
 		return res;
 }
 
+
+/*
+ * On success, returns the minimum spanning tree of graph
+ * On Error, returns a null pointer and sets errno
+ */
 int **prim_minimum_spanning_tree(int **graph, int size)
 {
 		int **mst = malloc(size * sizeof(int*));
@@ -64,6 +70,12 @@ int **prim_minimum_spanning_tree(int **graph, int size)
 										graph, 
 										size
 										);
+				if(lightest_edge.src == NODE_UNK
+								|| lightest_edge.dst == NODE_UNK){
+						printf("Graph is not Connected!\n");
+						errno = EINVAL;
+						return 0;
+				}
 
 				set_bidirectional_edge(mst, lightest_edge);
 				selected_vertices[lightest_edge.src] = 1;

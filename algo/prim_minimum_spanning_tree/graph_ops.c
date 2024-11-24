@@ -66,7 +66,7 @@ struct edge make_default_edge(){
 
 void set_bidirectional_edge(int ** graph, struct edge e){
 #ifdef GR_OPS_DEBUG
-		printf("%sconnecting %d to %d with weight %d", GR_OPS_DEBUG_PREFIX, e.src, e.dst, e.weight);
+		printf("%sconnecting %d to %d with weight %d\n", GR_OPS_DEBUG_PREFIX, e.src, e.dst, e.weight);
 #endif
 
 		graph[e.src][e.dst] = e.weight == WEIGHT_UNK ? 1 : e.weight;
