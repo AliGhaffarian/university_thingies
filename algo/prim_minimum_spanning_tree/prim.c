@@ -56,11 +56,12 @@ int **prim_minimum_spanning_tree(int **graph, int size)
 		int *selected_vertices = malloc(size * sizeof(int));
 		memset(selected_vertices, 0, size * sizeof(int));
 
-		selected_vertices[rand() % size] = 1;
+		int random_selected_vertex = rand() % size;
+		selected_vertices[random_selected_vertex] = 1;
 		int number_of_selected_vertices = 1;
 
 #ifdef PRIM_DEBUG
-		printf("%srandomly selected vertex : %d\n", PRIM_DEBUG_PREFIX, selected_vertices[0]);
+		printf("%srandomly selected vertex : %d\n", PRIM_DEBUG_PREFIX, random_selected_vertex);
 #endif
 
 		while (number_of_selected_vertices < size){
