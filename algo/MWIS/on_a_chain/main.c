@@ -7,12 +7,15 @@
 int main(){
 		int chain_size;
 
-		int* chain = generate_random_chain_weighted_nodes(&chain_size);	
+		int* chain =generate_random_chain_weighted_nodes(&chain_size);	
 
 		printf("random chain:\n");
-		show_chain_weighted_nodes(chain, chain_size + 1, 1);
+		show_chain_weighted_nodes(chain, chain_size, 1);
 
 		mwis_init();
-		printf("result: %d\n", mwis_chain(chain, chain_size));
+		printf("result of recursive: %d\n", mwis_chain_recursive(chain, chain_size - 1));
+
+		mwis_init();
+		printf("result of iterative: %d\n", mwis_chain_iterative(chain, chain_size));
 
 }
