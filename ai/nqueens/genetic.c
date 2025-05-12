@@ -3,8 +3,8 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <time.h>
-#define POP_SIZE 1000
-#define N 9
+#define POP_SIZE 100
+#define N 8
 #define POP_MEM_SIZE (N * POP_SIZE * sizeof(int))
 #define MAX_COST (((N - 1 + 1) / 2) * (N - 1))
 
@@ -103,10 +103,15 @@ int *iter_ga(int *population){
 	int size_of_parent_pool;
 	for(int i = 0; i < POP_SIZE; i += 2){
 		int *parent_indexes = select_parents(population);
-		int *children = crossover_and_mutate(population + (parent_indexes[0] * N), population + (parent_indexes[1] * N));
+		int *children = crossover_and_mutate(
+				population + (parent_indexes[0] * N), 
+				population + (parent_indexes[1] * N));
+
 		memcpy(result_population + (i/2 * N), children, N * sizeof(int));
 		memcpy(result_population + (((i/2) + 1) * N), children + N, N * sizeof(int));
+
 		free(children);
+		free(parent_indexes);
 	}
 	return result_population;
 }
@@ -115,8 +120,8 @@ int *solve_ga(){
 	int *solution;
 	int i = 0;
 	while ((solution = solution_among_population(population)) == 0) {
-		int *next_gen = (int *)malloc(POP_MEM_SIZE);
-		memcpy(next_gen, iter_ga(population), POP_MEM_SIZE);
+		free(solution);
+		int *next_gen = iter_ga(population);
 		free(population);
 		population = next_gen;
 		i++;
