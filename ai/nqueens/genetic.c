@@ -4,15 +4,17 @@
 #include <stdbool.h>
 #include <time.h>
 #include <sys/param.h>
-#define POP_SIZE 100
+
+#define POP_SIZE 200
 #define N 8
+//#define MAX_ITER 100
+#define DEBUG 
+
 #define POP_MEM_SIZE (N * POP_SIZE * sizeof(int))
 #define MAX_COST (((N - 1 + 1) / 2) * (N - 1))
-
+#define MUTATE_PROB 10
 #define debug_delim "--------------"
 
-//#define DEBUG 
-//#define MAX_ITER 100
 
 #ifdef DEBUG 
 #include <stdio.h>
@@ -66,8 +68,7 @@ int *make_parent_index_pool_based_on_fitness(int *population, int *size_of_pool)
 	// 				 			number of solutions 	* MAX_COST to make room for max fitnes
 	int *parent_index_pool_based_on_fitness= (int *)malloc(POP_SIZE  		* MAX_COST * sizeof(int));
 	int current_pool_index = 0;
-	int max_fitness = 0;
-	for (int i = 0; i < N; i++){
+	int max_fitness = 0; for (int i = 0; i < POP_SIZE; i++){
 		int fitness_of_i = (MAX_COST) - cost(population + (i * N));
 		for (int j = current_pool_index; j < current_pool_index + fitness_of_i; j++){
 			parent_index_pool_based_on_fitness[j] = i;
@@ -100,12 +101,12 @@ int *crossover_and_mutate(int *first_parent, int *second_parent){
 		offsprings[i + N] = ( i >= crossover_line ) ? first_parent[i] : second_parent[i];
 	}
 
-	bool do_mutate = (random() % 10) < 3;
+	bool do_mutate = (random() % 100) <= MUTATE_PROB;
 	if (do_mutate){
 		offsprings[random_y()] = random_y();
 	}
 
-	do_mutate = (random() % 10) < 3;
+	do_mutate = (random() % 100) <= MUTATE_PROB;
 	if (do_mutate){
 		offsprings[random_y() + N] = random_y();
 	}
@@ -122,8 +123,8 @@ int *iter_ga(int *population){
 				population + (parent_indexes[0] * N), 
 				population + (parent_indexes[1] * N));
 
-		memcpy(result_population + (i/2 * N), children, N * sizeof(int));
-		memcpy(result_population + (((i/2) + 1) * N), children + N, N * sizeof(int));
+		memcpy(result_population + (i * N), children, N * sizeof(int));
+		memcpy(result_population + ((i + 1) * N), children + N, N * sizeof(int));
 
 		free(children);
 		free(parent_indexes);
@@ -136,11 +137,22 @@ int *solve_ga(){
 	int *solution;
 	int i = 0;
 	while ((solution = solution_among_population(population)) == 0) {
+		dbg_printf("generation: %d\n", i);
+#ifdef DEBUG
+		for (int j = 0; j < POP_SIZE; j++){
+			printf("pop[%d]:", j);
+			for(int k = 0; k < N; k++){
+				printf("%d, ", *(population + (N * j) + k));
+			} 
+			printf("\n");
+		}
+#else
+		if (i % 100000 == 0) printf("generation: %d\n", i);
+#endif
 
 #ifdef MAX_ITER
 		if (i == MAX_ITER) return solution;
 #endif
-		dbg_printf("generation: %d\n", i);
 		free(solution);
 		int *next_gen = iter_ga(population);
 		free(population);
