@@ -1,0 +1,10 @@
+TRAINING_TO_TEST_DATA_RATIO=3
+DATASET_DIR="/home/user/Clones/a-labelled-version-of-the-ADFA-LD-dataset/ext/ADFA-LD"
+ATTACK_SUBDIR="Attack_Data_Master"
+TRAINING_SUBDIR="Training_Data_Master"
+TRAINING_LABELS="labels_training.csv"
+TESTING_LABELS="labels_testing.csv"
+DEST_DIR="dataset"
+ATTACK_CLASS_VALUE=1
+NORMAL_CLASS_VALUE=0
+LONGEST_ELEM_FILE="longest_elem"
